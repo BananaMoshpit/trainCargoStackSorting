@@ -1,4 +1,4 @@
-# ed
+# trainCargoStackSorting
 A stack sorting cargo system written in c <br>
 refurbsihed from my final project for the Data Structure(2019/2) course at Universidade de Brasília.
 
