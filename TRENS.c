@@ -5,10 +5,11 @@
 
 
 
-
+//Adding new sorting algorithm(to later test cpu, memory and mainly time consumption)
 int recebeCargass(float** cargas){
-    int tam = 0;
     float carga;
+    int tam = 0;
+    float* quick, *bubble; //Declared further down
     
     *cargas = (float*)malloc(sizeof(float));
  
@@ -30,7 +31,10 @@ int recebeCargass(float** cargas){
             cargas[0][tam - 1] = carga;  
         }
 
-        qsort(*cargas, tam, sizeof(float), cmpr);
+        quick = *cargas;
+        bubble = *cargas;
+        qsort(quick, tam, sizeof(float), cmpr);
+        bubbleSort(bubble, tam);
 
         printf("\nCargas ordenadas:\n");
     }
@@ -156,15 +160,15 @@ static int cmpr(const void *n1, const void *n2 ){
  return (b<a)-(b>a);
 }
 
-//The folllowing two functions are geeksforgeeks' bubble sort from https://www.geeksforgeeks.org/bubble-sort/, only return was changed (previously void)
+//The folllowing two functions are geeksforgeeks' bubble sort from https://www.geeksforgeeks.org/bubble-sort/
 //They'll be used to test the cpu and time usage methods, wich should boht be greater than quicksort's
-void swap(int *xp, int *yp){ 
-    int temp = *xp; 
+void swap(float *xp, float *yp){ 
+    float temp = *xp; 
     *xp = *yp; 
     *yp = temp; 
 } 
 
-int* bubbleSort(int* arr, int n){ 
+void bubbleSort(float* arr, int n){  //TODO: return void if return is unused
    int i, j; 
    for (i = 0; i < n-1; i++)       
   
@@ -172,6 +176,4 @@ int* bubbleSort(int* arr, int n){
        for (j = 0; j < n-i-1; j++)  
            if (arr[j] > arr[j+1]) 
               swap(&arr[j], &arr[j+1]); 
-    
-    return arr;
 }
