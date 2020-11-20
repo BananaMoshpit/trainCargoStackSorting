@@ -4,7 +4,7 @@
 
 int MAXKG ;
 int MAXVAG;
-float *CARGAS;
+float *CARGAS; // An array of packages with ascending weight order
 int TAM = 0;
 
 
@@ -53,6 +53,20 @@ void ordenaVagoes(trem* t){
     printf("Vagões reordenados.\n");
 }
 
+/*  Receives: curent weight in train car and last index checked in CARGAS
+*   Searches next package to be loaded in train car (whose weight may be added to car without overloading)
+*   Returns: either index of found package or -1 if there's no possible package
+*/
+int nextCargo(int kgs, int lastChecked){
+    int i;
+
+    for ( i = lastChecked - 1; i >= 0; i--){
+        if( i >= 0 && CARGAS[i] != -1 && CARGAS[i] + kgs <= MAXKG)
+            return i;
+    }
+    
+    return -1;
+}
 
 /*  Recebe vagão alocado
 *   Retira do pesos do fim de CARGAS 
@@ -61,19 +75,43 @@ void ordenaVagoes(trem* t){
 *   Retorna: nada
  */
 void carregaVagao(vag* v){
-    
+    int iNext, lastChecked;
     float kgs = 0;
-    
-    while(kgs + CARGAS[TAM-1] <= MAXKG && CARGAS[TAM-1] != -1 ){
-        
-        empilha( &v->topo, CARGAS[TAM -1]);
 
-        kgs += CARGAS[TAM-1];
-        TAM--;
-        
-        printf(">[Vagão %d] %0.fkgs empilhados\n", v->chave, v->topo->peso) ;
+    lastChecked = TAM;
     
-    }
+    do{
+        iNext = nextCargo(kgs, lastChecked);
+        lastChecked = iNext;
+
+        if(iNext != -1 && CARGAS[iNext] != -1){
+            empilha( &v->topo, CARGAS[iNext]);
+            kgs += CARGAS[iNext];
+            CARGAS[iNext] = -1;
+
+            if(iNext == TAM - 1)
+                TAM--;
+                
+        printf(">[Vagão %d] %0.fkgs empilhados\n", v->chave, v->topo->peso);
+        }
+    }while (iNext != -1);
+    
+
+   // while(kgs + CARGAS[TAM-1] <= MAXKG && CARGAS[TAM-1] != -1 ){
+   //     
+   //     if(CARGAS[TAM - 1 != -1])
+   //         empilha( &v->topo, CARGAS[TAM -1]);
+//
+   //     else
+   //         TAM--;
+//
+   //     
+   //     kgs += CARGAS[TAM-1];
+   //     TAM--;
+   //     
+   //     printf(">[Vagão %d] %0.fkgs empilhados\n", v->chave, v->topo->peso) ;
+   // 
+   // }
 
     v->kgs = kgs;
     
@@ -104,6 +142,7 @@ void preencheTrem(trem* t){
          printf("Número máximo de vagões no trem %d será excedido...\n", t->chave);
      
 }
+
 static int cmpr(const void *n1, const void *n2 ){
  float a, b;
  a = *(const float*)n1;
