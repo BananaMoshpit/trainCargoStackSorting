@@ -155,3 +155,23 @@ static int cmpr(const void *n1, const void *n2 ){
  b = *(const float*)n2;
  return (b<a)-(b>a);
 }
+
+//The folllowing two functions are geeksforgeeks' bubble sort from https://www.geeksforgeeks.org/bubble-sort/, only return was changed (previously void)
+//They'll be used to test the cpu and time usage methods, wich should boht be greater than quicksort's
+void swap(int *xp, int *yp){ 
+    int temp = *xp; 
+    *xp = *yp; 
+    *yp = temp; 
+} 
+
+int* bubbleSort(int* arr, int n){ 
+   int i, j; 
+   for (i = 0; i < n-1; i++)       
+  
+       // Last i elements are already in place    
+       for (j = 0; j < n-i-1; j++)  
+           if (arr[j] > arr[j+1]) 
+              swap(&arr[j], &arr[j+1]); 
+    
+    return arr;
+}

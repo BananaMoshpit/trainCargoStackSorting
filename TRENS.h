@@ -117,6 +117,17 @@ void imprimeTrens(trem* head);
 static int cmpr(const void *n1, const void *n2 );
 
 
+//The folllowing two functions are geeksforgeeks' bubble sort from https://www.geeksforgeeks.org/bubble-sort/, only return was changed (previously void)
+//They'll be used to test the cpu and time usage methods, wich should boht be greater than quicksort's
+void swap(int *xp, int *yp);
+
+/*  
+    Recebe: array desordenado
+    Retorna: Array ordenado
+    Pré-condição: array and pointer are non-null
+    Pós-condição: array is ordered
+ */
+int* bubbleSort(int* arr, int n);
 
 #endif /*TRENS_H_*/
 /*  
