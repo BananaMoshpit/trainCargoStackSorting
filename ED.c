@@ -99,6 +99,11 @@ void carregaVagao(vag* v){
     
     
 
+    for (int i = TAM - 1; CARGAS[i] == -1; i--) //Diminui o tamanho do array enquento os pesos maiores forem sabidamente retirados de 
+        TAM--;
+    
+    
+
     v->kgs = kgs;
     
     if(TAM != 0)
