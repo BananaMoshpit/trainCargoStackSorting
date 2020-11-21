@@ -1,10 +1,10 @@
 #include<stdlib.h>
 #include<stdio.h>
+#include<time.h>
 
-int MAXKG ;
-int MAXVAG;
-float *CARGAS; // An array of packages with ascending weight order
-int TAM = 0;
+/***********************************************************************************
+//HEADER
+***********************************************************************************/
 
 typedef struct caixas{
     float peso;
@@ -121,9 +121,29 @@ void imprimeTrens(trem* head);
 static int cmpr(const void *n1, const void *n2 );
 
 
+//The folllowing two functions are geeksforgeeks' bubble sort from https://www.geeksforgeeks.org/bubble-sort/
+//They'll be used to test the cpu and time usage methods, wich should boht be greater than quicksort's
+void swap(float *xp, float *yp);
+
+/*  
+    Recebe: array desordenado
+    Retorna: Array ordenado
+    Pré-condição: array and pointer are non-null
+    Pós-condição: array is ordered
+ */
+void bubbleSort(float* arr, int n); //TODO: return void if return is unused
+
+/***********************************************************************************
+//HEADER IMPLEMENTATION
+***********************************************************************************/
+
+//Adding new sorting algorithm(to later test cpu, memory and mainly time consumption)
 int recebeCargass(float** cargas){
-    int tam = 0;
+    double quick_time, bubble_time;
+
     float carga;
+    int tam = 0;
+    float* quick, *bubble; //Declared further down
     
     *cargas = (float*)malloc(sizeof(float));
  
@@ -145,7 +165,26 @@ int recebeCargass(float** cargas){
             cargas[0][tam - 1] = carga;  
         }
 
-        qsort(*cargas, tam, sizeof(float), cmpr);
+        
+        quick = *cargas;
+        bubble = *cargas;
+
+//The clock usage here was borrowed from https://github.com/aastharawat/Comparative-Analysis/blob/master/main.c
+        clock_t quick_begin = clock();
+        qsort(quick, tam, sizeof(float), cmpr);
+        clock_t quick_end = clock();
+
+        quick_time = (double) (quick_end - quick_begin)/CLOCKS_PER_SEC; //TODO: research this: how is time measured? wich unity? Could this inform real time cost of rearranging packagees in a storage facility?
+        printf("\nTime taken by quicksort: %f", quick_time);
+
+
+        clock_t bubble_begin = clock();
+        bubbleSort(bubble, tam);
+        clock_t bubble_end = clock();
+
+        bubble_time = (double) (bubble_end - bubble_begin)/CLOCKS_PER_SEC; //TODO: research this: how is time measured? wich unity? Could this inform real time cost of rearranging packagees in a storage facility?
+        printf("\nTime taken by bubblesort: %f", bubble_time);
+
 
         printf("\nCargas ordenadas:\n");
     }
@@ -264,6 +303,33 @@ float imprimeBottom(caixas* c ){
  return c->peso;
 }
 
+//The folllowing two functions are geeksforgeeks' bubble sort from https://www.geeksforgeeks.org/bubble-sort/
+//They'll be used to test the cpu and time usage methods, wich should boht be greater than quicksort's
+void swap(float *xp, float *yp){ 
+    float temp = *xp; 
+    *xp = *yp; 
+    *yp = temp; 
+} 
+
+void bubbleSort(float* arr, int n){  //TODO: return void if return is unused
+   int i, j; 
+   for (i = 0; i < n-1; i++)       
+  
+       // Last i elements are already in place    
+       for (j = 0; j < n-i-1; j++)  
+           if (arr[j] > arr[j+1]) 
+              swap(&arr[j], &arr[j+1]); 
+}
+
+/***********************************************************************************
+//  MAIN 
+***********************************************************************************/
+
+int MAXKG ;
+int MAXVAG;
+float *CARGAS; // An array of packages with ascending weight order
+int TAM = 0;
+
 
 void carregaVagao(vag* v);
 void preencheTrem(trem* t);
@@ -351,11 +417,19 @@ void carregaVagao(vag* v){
                 
         printf(">[Vagão %d] %0.fkgs empilhados\n", v->chave, v->topo->peso);
         }
-    }while (iNext != -1);
+    }while (iNext != -1);    for (int i = TAM - 1; CARGAS[i] == -1 && i >= 0; i--) //Diminui o tamanho do array enquento os pesos maiores forem sabidamente retirados de 
+        TAM--; //This is crucial to decide wether sytem stops or not. All packages unloaded means TAM == 0
     
+    
+
+    for (int i = TAM - 1; CARGAS[i] == -1; i--) //Diminui o tamanho do array enquento os pesos maiores forem sabidamente retirados de 
+        TAM--;
+    
+    
+
     v->kgs = kgs;
     
-    if( CARGAS[TAM-1] != -1)
+    if(TAM != 0)
         printf("Carga máxima no vagão %d será excedida...\n", v->chave);
 
 }
@@ -370,7 +444,7 @@ void preencheTrem(trem* t){
    
 
     printf("[TREM %d]:\n", t->chave);
-    while( CARGAS[TAM-1] != -1 && count <= MAXVAG)
+    while( TAM >= 1 && count <= MAXVAG) //Isso causava um bug caso ainda haja pacotes a serem despachados mas TAM esteja desatualizado e CARGAS[TAM] já fosse despachado
     {
        alocaVagao(aux, count);
        carregaVagao(*aux);
@@ -403,13 +477,14 @@ void main(){
     //^Armazena e ordena pesos em *CARGAS 
 
     printf("Iniciando despache...\n");
-    for( aux = &fila; CARGAS[TAM-1] != -1; aux = &(*aux)->prox, count++ )
+    for( aux = &fila; TAM != 0; aux = &(*aux)->prox, count++ )
     {
         
         alocaTrem(aux, count);
         preencheTrem(*aux);
+        
         if( (*aux)->inicioV->prox != NULL)
-        ordenaVagoes(*aux);
+            ordenaVagoes(*aux);
         printf("\n");
     }
     
