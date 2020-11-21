@@ -94,11 +94,14 @@ void carregaVagao(vag* v){
                 
         printf(">[Vagão %d] %0.fkgs empilhados\n", v->chave, v->topo->peso);
         }
-    }while (iNext != -1);
+    }while (iNext != -1);    for (int i = TAM - 1; CARGAS[i] == -1 && i >= 0; i--) //Diminui o tamanho do array enquento os pesos maiores forem sabidamente retirados de 
+        TAM--; //This is crucial to decide wether sytem stops or not. All packages unloaded means TAM == 0
+    
+    
 
     v->kgs = kgs;
     
-    if( CARGAS[TAM-1] != -1)
+    if(TAM != 0)
         printf("Carga máxima no vagão %d será excedida...\n", v->chave);
 
 }
@@ -113,7 +116,7 @@ void preencheTrem(trem* t){
    
 
     printf("[TREM %d]:\n", t->chave);
-    while( CARGAS[TAM-1] != -1 && count <= MAXVAG)
+    while( TAM >= 1 && count <= MAXVAG) //Isso causava um bug caso ainda haja pacotes a serem despachados mas TAM esteja desatualizado e CARGAS[TAM] já fosse despachado
     {
        alocaVagao(aux, count);
        carregaVagao(*aux);
@@ -146,12 +149,12 @@ void main(){
     //^Armazena e ordena pesos em *CARGAS 
 
     printf("Iniciando despache...\n");
-    for( aux = &fila; TAM != 0; aux = &(*aux)->prox, count++ ) //FIXME: overseeing certain packages, run ./wrong.o < w.txt to check
+    for( aux = &fila; TAM != 0; aux = &(*aux)->prox, count++ )
     {
         
         alocaTrem(aux, count);
         preencheTrem(*aux);
-        if( (*aux)->inicioV->prox != NULL)  // FIXME: segfault 
+        if( (*aux)->inicioV->prox != NULL) 
         ordenaVagoes(*aux);
         printf("\n");
     }
