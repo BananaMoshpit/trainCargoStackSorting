@@ -96,6 +96,11 @@ void carregaVagao(vag* v){
         }
     }while (iNext != -1);
 
+    for (int i = TAM - 1; CARGAS[i] == -1; i--) //Diminui o tamanho do array enquento os pesos maiores forem sabidamente retirados de 
+        TAM--;
+    
+    
+
     v->kgs = kgs;
     
     if( CARGAS[TAM-1] != -1)
@@ -113,7 +118,7 @@ void preencheTrem(trem* t){
    
 
     printf("[TREM %d]:\n", t->chave);
-    while( CARGAS[TAM-1] != -1 && count <= MAXVAG)
+    while( CARGAS[TAM-1] != -1 && count <= MAXVAG) //Isso causa um bug caso ainda haja pacotes a serem despachados mas TAM esteja desatualizado
     {
        alocaVagao(aux, count);
        carregaVagao(*aux);
@@ -151,7 +156,7 @@ void main(){
         
         alocaTrem(aux, count);
         preencheTrem(*aux);
-        if( (*aux)->inicioV->prox != NULL)  // FIXME: segfault 
+        if( (*aux)->inicioV->prox != NULL)  // FIXME: segfault: inicioV is NULL
         ordenaVagoes(*aux);
         printf("\n");
     }
