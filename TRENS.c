@@ -1,12 +1,13 @@
 #include<stdlib.h>
 #include<stdio.h>
+#include<time.h>
 #include "TRENS.h"
-
-
 
 
 //Adding new sorting algorithm(to later test cpu, memory and mainly time consumption)
 int recebeCargass(float** cargas){
+    double quick_time, bubble_time;
+
     float carga;
     int tam = 0;
     float* quick, *bubble; //Declared further down
@@ -31,10 +32,26 @@ int recebeCargass(float** cargas){
             cargas[0][tam - 1] = carga;  
         }
 
+        
         quick = *cargas;
         bubble = *cargas;
+
+//The clock usage here was borrowed from https://github.com/aastharawat/Comparative-Analysis/blob/master/main.c
+        clock_t quick_begin = clock();
         qsort(quick, tam, sizeof(float), cmpr);
+        clock_t quick_end = clock();
+
+        quick_time = (double) (quick_end - quick_begin)/CLOCKS_PER_SEC; //TODO: research this: how is time measured? wich unity? Could this inform real time cost of rearranging packagees in a storage facility?
+        printf("\nTime taken by quicksort: %f", quick_time);
+
+
+        clock_t bubble_begin = clock();
         bubbleSort(bubble, tam);
+        clock_t bubble_end = clock();
+
+        bubble_time = (double) (bubble_end - bubble_begin)/CLOCKS_PER_SEC; //TODO: research this: how is time measured? wich unity? Could this inform real time cost of rearranging packagees in a storage facility?
+        printf("\nTime taken by bubblesort: %f", bubble_time);
+
 
         printf("\nCargas ordenadas:\n");
     }
